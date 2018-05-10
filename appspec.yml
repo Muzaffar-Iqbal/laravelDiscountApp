@@ -4,14 +4,10 @@ files:
   - source: /
     destination: /var/www/html/blog
 permissions:
-   - object: /var/www/html
+   - object: /var/www/html/blog
      pattern: "**"
      owner: apache
      group: apache
      mode: 755
      type:
        - file
-hooks:
-   BeforeInstall:
- 
-   AfterInstall:
