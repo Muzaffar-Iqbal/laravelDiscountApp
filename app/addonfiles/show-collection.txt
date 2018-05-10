@@ -1,0 +1,214 @@
+{% assign coll_names_single = coll_names | split:',' %}  <!-- split the all collection -->
+{% assign product_names_single = product_names | split:' ' %}  <!-- split the all prodcuts -->
+{% assign tabs_titl = tabs_titl | remove_first: "," %}
+{% assign tabs_coll = tabs_titl | split:',' %}  <!-- split the atbs ttitl -->
+{% assign tabs_coll_sel = tabs_coll_sel | remove_first: "," %}
+{% assign tabs_coll_new = tabs_coll_sel | split:',' %}  <!-- split the atbs ttitl -->
+{% assign title_single = titleis | split:' ' %}  <!-- split the all title -->
+{% assign title_single_name = title_names | split:' ' %}  <!-- split the all prodcuts --> 
+{% assign coll_tags_strip = coll_tags | strip %}   <!--tagss -->
+{% assign coll_tags_single = coll_tags_strip | split:' ' %}  <!-- split the all collection -->
+
+
+
+
+ 
+
+
+  <!-- if contains collection name  -->
+{% if contain_collection contains 'collection' %}
+{% assign Collname = collection_name %}
+{% assign collection = true %}  
+{% else%}
+{% assign collection = false %}
+{% endif %}
+<!-- To check data-select="true" or data-select="false" -->
+{% if  sections[0] contains 'selected'%}
+{% assign find = true %}
+{% else%}
+{% assign find = false %}
+{% endif %}
+{% if product_name != '' %}
+{% assign productData = true %}
+{% endif %}
+{% assign split_des = split_info[1] | split: "|"  %}
+<span class="cart_hide" style="display:none;">{{split_des[2]}}</span>   
+{% for item in split_des %}
+{% if forloop.first %}
+{% capture item_length %}{{ forloop.length }}{% endcapture %}
+{% endif %}
+{% endfor %}
+{% assign length = item_length | minus: 3 %}
+  
+{% if true %}
+  <!-- If data-type="collection"  -->
+
+<!-- changes here -->
+
+ 
+
+<ul>
+  {% assign tags_size = sizeOftags | minus:1%}
+  
+ 
+  
+{% assign trim_spaces = sections_tags_coll[0] | strip %}
+ 
+ 
+{% assign split_all_tags = sections_tags_coll[1]| split: ',' %}
+{% assign tags_size = split_all_tags | size %}
+{% assign tags_size =  tags_size | minus:1 %}
+  
+{% for all_products in collections[trim_spaces].products %}
+
+{% assign tags_arr  = '' %}
+ 
+  {% for tag in all_products.tags %}
+  {% for l in (0..tags_size) %}
+{% assign trim_space_from_tags =  split_all_tags[l] | strip %} 
+
+ {% assign tags_array_uniq =  tags_arr | split: '-' %} 
+ {% assign tags_arr_sze = tags_array_uniq | size %}
+ {% assign tags_arr_sze = tags_arr_sze | minus:1 %}
+ {% if trim_space_from_tags != '' %}   <!-- not empty tags -->
+ {% assign tagsFinal = trim_space_from_tags %}
+ {% endif %}
+  
+  
+  {% if tag == tagsFinal %}
+  {% assign show_prod = true %}
+  {% break %}
+  {% else %}
+  {% assign show_prod = false %}
+  {% endif %}
+   {% endfor %} 
+ 
+{% endfor %}
+ 
+  
+  
+  
+{% if show_prod  == true %}
+     
+{% if all_products.variants.size > 1 %} <!-- To check Added Products have variants -->
+{% assign variants_check = true %}
+   {% assign variant = product.variants.first %}
+{% if variant.inventory_quantity <= 0  and variant.inventory_management  %} 
+    <li class="with-variant ">
+    <label>
+{{ all_products.title }}, +{{ all_products.price | money }} 
+     
+      
+      </label>
+      <span>
+      <div class="cust_tooltip"><i class="fa fa-file-image-o" data-img="{{ all_products.featured_image | img_url: 'grande' }}" aria-hidden="true"></i>
+      <span class="cust_tooltiptext"><img class="show_popup" src="" ></span>
+      </div>
+      <a class="add-more-products" href="{{all_products.url }}" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i></a> 
+     
+      </span>
+           
+      </li>
+      <ul class="nested-ul">
+       
+        
+{% for variant in all_products.variants %}  <!-- Loop to get variant of each product -->
+         {% if variant.inventory_quantity <= 0  and variant.inventory_management   %} 
+<li class="notavailable">
+         <label>
+          <input data-price = "{{ variant.price }}" {% if forloop.index == 1%}{% if find == true %}checked='checked'{%endif%}{% endif %} class="checkboxes {% if forloop.index == 1%}nested_variant_one{% endif %}" type="checkbox" value="{{variant.id}}" disabled>
+         {{ variant.title }}, +{{ variant.price | money }}
+         </label>
+</li>
+        {% else %}
+        <li>
+         <label>
+          <input data-price = "{{ variant.price }}" {% if forloop.index == 1%}{% if find == true %}checked='checked'{%endif%}{% endif %} class="checkboxes {% if forloop.index == 1%}nested_variant_one{% endif %}" type="checkbox" value="{{variant.id}}">
+         {{ variant.title }}, +{{ variant.price | money }}
+         </label>
+</li>
+        {% endif %}
+{% endfor %}
+ </ul>
+  {% else %}
+      <li class="with-variant ">
+    <label>
+{{ all_products.title }}, +{{ all_products.price | money }} 
+     
+      
+      </label>
+      <span>
+      <div class="cust_tooltip"><i class="fa fa-file-image-o" data-img="{{ all_products.featured_image | img_url: 'grande' }}" aria-hidden="true"></i>
+      <span class="cust_tooltiptext"><img class="show_popup" src="" ></span>
+      </div>
+      <a class="add-more-products" href="{{all_products.url }}" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i></a> 
+     
+      </span>
+           
+      </li>
+      <ul class="nested-ul">
+       
+        
+{% for variant in all_products.variants %}  <!-- Loop to get variant of each product -->
+         {% if variant.inventory_quantity <= 0  and variant.inventory_management  %} 
+<li class="notavailable">
+         <label>
+          <input data-price = "{{ variant.price }}" disabled {% if forloop.index == 1%}{% if find == true %}checked='checked'{%endif%}{% endif %} class="checkboxes {% if forloop.index == 1%}nested_variant_one{% endif %}" type="checkbox" value="{{variant.id}}">
+         {{ variant.title }}, +{{ variant.price | money }}
+         </label>
+</li>
+        {% else %}
+        <li>
+         <label>
+          <input data-price = "{{ variant.price }}" {% if forloop.index == 1%}{% if find == true %}checked='checked'{%endif%}{% endif %} class="checkboxes {% if forloop.index == 1%}nested_variant_one{% endif %}" type="checkbox" value="{{variant.id}}">
+         {{ variant.title }}, +{{ variant.price | money }}
+         </label>
+</li>
+        {% endif %}
+{% endfor %}
+ </ul>
+  {% endif %}
+  
+{% else %} <!-- For those products have no variants-->
+ {% assign variant = product.variants.first %}
+{% if variant.inventory_quantity <= 0  and variant.inventory_management   %} 
+<li class="without-variant notavailable">
+<label>
+        <input class="checkboxes"  data-price = "{{ all_products.price | divided_by:100 }}" type="checkbox" {% if find == true %}checked='checked'{%endif%} value="{% for variant in all_products.variants %}{{variant.id}}{% endfor %}" disabled>
+        {{ all_products.title }}, +{{ all_products.price | money }} 
+       
+  </label>
+  <span>
+   <div class="cust_tooltip"><i class="fa fa-file-image-o" data-img="{{ all_products.featured_image | img_url: 'grande' }}" aria-hidden="true"></i>
+  		<span class="cust_tooltiptext"><img class="show_popup" src=""></span>
+		</div>
+        <a class="add-more-products" href="{{all_products.url }}" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i></a>
+
+  </span>
+</li> 
+  
+  {% else %}
+  <li class="without-variant">
+<label>
+        <input class="checkboxes"  data-price = "{{ all_products.price | divided_by:100 }}" type="checkbox" {% if find == true %}checked='checked'{%endif%} value="{% for variant in all_products.variants %}{{variant.id}}{% endfor %}">
+        {{ all_products.title }}, +{{ all_products.price | money }} 
+       
+  </label>
+  <span>
+   <div class="cust_tooltip"><i class="fa fa-file-image-o" data-img="{{ all_products.featured_image | img_url: 'grande' }}" aria-hidden="true"></i>
+  		<span class="cust_tooltiptext"><img class="show_popup" src=""></span>
+		</div>
+        <a class="add-more-products" href="{{all_products.url }}" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i></a>
+
+  </span>
+</li> 
+  
+  {% endif%}
+  
+{% endif%}
+{% endif%}
+{% endfor %}
+ 
+</ul>
+{% endif %}
+<!-- End Collection Type --> 

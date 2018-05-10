@@ -1,0 +1,520 @@
+{% if product.description contains 'quick-add' %}
+
+		{{ 'component.css' | asset_url | stylesheet_tag }}
+		{{ 'modernizr.custom.js' | asset_url | script_tag }}
+
+{% comment %}
+<!-- Code as of 5/11/2017 -->
+{% endcomment %}
+{% if product.description contains 'addon-only' %}
+{% assign onlyAddon = 'only-addon' %}
+{% else %}
+{% assign onlyAddon = 'all' %}
+{% endif %}
+<div id="quick_cart" class="related products {{ onlyAddon }}" >
+  {% if settings.theme_selector == 'One_Exam_Prep' %}
+  {% if settings.addon_product_text %}<p>{{settings.addon_product_text}}</p>{% endif %}
+  {% endif %}
+  {% if settings.theme_selector == 'Export_Probilitysafetyacademy' %}
+   {% if settings.Probilitysafetyacademy_addon_product_text %}<p>{{settings.Probilitysafetyacademy_addon_product_text}}</p>{% endif %}
+  {% endif %}
+  {% if settings.theme_selector == 'examprep_probilitymedia' %}
+  {% if settings.Probilitymedia_addon_product_text %}<p>{{settings.Probilitymedia_addon_product_text}}</p>{% endif %}
+  {% endif %}
+ 	 {% assign variants_check = false %}
+     {% assign description = product.description %}
+     {% assign split_info = description | split: "quick-add"  %}
+
+	 {% assign all_description =  description | split: "quick-add" | first | escape %}
+
+  {% if all_description contains 'data-type' or all_description contains 'display:' %}   <!-- if data-type then old foramte otherwise new -->
+  {% include 'old-adon-formate' %}
+  {% else %}
+   {% include 'new-adon-formate' %}
+  {% endif %}
+
+
+<style>
+  #quick_cart {}
+  #quick_cart ul {list-style: none; padding: 0;}
+  #quick_cart ul ul {padding-left:20px;}
+  #quick_cart label {margin-bottom:0px;font-weight: normal;}
+  #quick_cart label a {padding-left: 5px;}
+  #quick_cart p {font-weight: bold;font-size: 18px;}
+ .formAddToCart .proButton { display: none; }
+</style>
+
+<script>
+$( document ).ready(function() {
+      
+  
+  var sze = $('.checkboxes').size();
+  if(sze <= 1)
+  {
+  $('#select_all_products').hide();
+  }
+  
+  
+  $('.show_popup').click(function(){
+
+  var src = $(this).parent().prev().attr('data-img');
+  $('.md-content  img').attr('src',src); 
+  $('.md-trigger').click();     
+  });
+  
+  $('.cust_tooltip .fa.fa-file-image-o').click(function(){
+
+  var src = $(this).attr('data-img');
+  $('.md-content  img').attr('src',src);
+  $('.md-trigger').click();  
+    
+  });
+  
+ $('.fa-file-image-o').mouseenter(function() {
+  var image = $(this).attr('data-img').replace('_grande','_large'); 
+   $(this).parent().find('.cust_tooltiptext').children('img').attr('src',image);
+}); 
+
+  var a = 0;
+  
+    $('#select_all_products').click(function(){ 
+	  $(this).hide();
+ 	  $('#unselect_all_products').show();
+  	  $('.without-variant').find('input').prop('checked',true);
+      $('.nested_variant_one').prop('checked',true);
+      
+      
+    
+  });
+  
+
+  
+  $( ".add_2_cart" ).click(function(){
+ 
+    if($('#quick_cart').hasClass('only-addon'))
+    {
+     
+      var toAdd = new Array();
+     jQuery("#quick_cart li").each(function()  {
+           if (jQuery(this).find('input').prop("checked") ==  true ){
+            var v_id = jQuery(this).find('input').val();
+			toAdd.push({
+               variant_id: v_id,
+               quantity_id: 1
+	        }); 
+           }
+     
+		});
+    
+        {% if variants_check == false%}
+    
+    		 jQuery(".nested-ul li").each(function()  {
+           if (jQuery(this).find('input').prop("checked") ==  true ){
+            var va_id = jQuery(this).find('input').val();
+			toAdd.push({
+               variant_id: va_id,
+               quantity_id: 1
+	        }); 
+           }
+     
+		});
+    
+    {% endif %}
+    }
+    else
+    {
+
+         {% if all_description contains 'data-type' or all_description contains 'display:' %}   
+
+               var toAdd = new Array();
+    		   toAdd.push({
+                 variant_id: jQuery('#productSelect option:selected').val(),
+               quantity_id:jQuery('#Quantity').val()
+	        }); 
+           jQuery("#quick_cart li").each(function()  {
+           if (jQuery(this).find('input').prop("checked") ==  true ){
+            var v_id = jQuery(this).find('input').val();
+			toAdd.push({
+               variant_id: v_id,
+               quantity_id: 1
+	        }); 
+           }
+     
+		});
+    
+        {% if variants_check == false%}
+    
+    		 jQuery(".nested-ul li").each(function()  {
+           if (jQuery(this).find('input').prop("checked") ==  true ){
+            var va_id = jQuery(this).find('input').val();
+			toAdd.push({
+               variant_id: va_id,
+               quantity_id: 1
+	        }); 
+           }
+     
+		});
+    
+    {% endif %}
+      
+      
+         {% else %}
+     
+         var toAdd = new Array();
+    		   toAdd.push({
+               variant_id: jQuery('#productSelect option:first-child').attr('value'),
+               quantity_id:jQuery('#quantity').val()
+	        }); 
+           jQuery("#quick_cart li").each(function()  {
+           if (jQuery(this).find('input').prop("checked") ==  true ){
+            var v_id = jQuery(this).find('input').val();
+			toAdd.push({
+               variant_id: v_id,
+               quantity_id: 1
+	        }); 
+           }
+     
+		});
+    
+        {% if variants_check == false%}
+    
+    		 jQuery(".nested-ul li").each(function()  {
+           if (jQuery(this).find('input').prop("checked") ==  true ){
+            var va_id = jQuery(this).find('input').val();
+			toAdd.push({
+               variant_id: va_id,
+               quantity_id: 1
+	        }); 
+           }
+     
+		});
+    
+    {% endif %}
+      {% endif %}
+    }
+       
+    
+  
+		
+          moveAlong(toAdd); 
+     	 
+    	function moveAlong(toAdd) {
+		if (toAdd.length) {
+			var request = toAdd.shift();
+			var tempId = request.variant_id;
+			var tempQty = request.quantity_id;
+			var params = {
+				type: 'POST',
+				url: '/cart/add.js',
+	          	data: 'quantity='+tempQty+'&id='+tempId+'',
+				dataType: 'json',
+				success: function(line_item) { 
+					moveAlong(toAdd);
+				},
+				error: function(xhr, status, error) {
+					console.log(xhr.responseText + status + error);
+					moveAlong(toAdd);
+				}
+			};
+			$.ajax(params);
+		}
+		else {  
+		window.location.href = "/cart";
+		}  
+	}
+  });
+ 
+  
+  
+  var cart_check = $(".cart_hide").text();
+  
+  if(cart_check != "" && cart_check != null){
+     $("#quick_cart").css("display","block"); 
+  }else{
+      
+    $("#add-to-cart").css("display","block"); 
+  }
+  
+  
+});
+</script>	
+
+  
+  <script>
+    $(document).ready(function(){
+      
+      
+
+      $('.currentPrice').text('0.00');
+      
+      $('.checkboxes').each(function(){
+        if($(this).is(":checked")) {
+          $('.stickHeader').show();   $('.stickHeader.defaultPrice').hide();
+
+          var pric       =  parseFloat($(this).attr('data-price'));  
+          var totalPrice =  parseFloat($('.currentPrice').text());
+          
+          var final_price = pric +  totalPrice;
+          
+          $('.currentPrice').text(final_price.toFixed(2))
+          
+          
+        }
+        
+      });
+      
+      
+     $('.checkboxes').change(function() {
+        $('.stickHeader').show();   $('.stickHeader.defaultPrice').hide();
+        if($(this).is(":checked")) {
+          
+          var pric       =  parseFloat($(this).attr('data-price'));  
+          var totalPrice =  parseFloat($('.currentPrice').text());
+          
+          var final_price = pric +  totalPrice;
+          
+          $('.currentPrice').text(final_price.toFixed(2))
+          
+          
+        }
+       else
+       {
+         
+          var pric       =  parseFloat($(this).attr('data-price'));  
+          var totalPrice =  parseFloat($('.currentPrice').text());
+          
+          var final_price = totalPrice - pric  ;
+          if(final_price > 0)
+          {
+          $('.currentPrice').text(final_price.toFixed(2));
+          }
+         else
+         {
+          $('.currentPrice').text('0.00');
+         }
+         
+       }
+       
+          if ($('.checkboxes:checked').length == $('.checkboxes').length) {
+            $('#select_all_products').hide();
+            $('#unselect_all_products').show();
+            
+            }
+       else
+       {
+       
+                   $('#select_all_products').show();
+            $('#unselect_all_products').hide();
+       }
+       
+    });
+      
+      
+      
+      
+      
+      
+      
+      
+            $('#select_all_products').click(function(){ 
+              
+               $('.stickHeader').show();   $('.stickHeader.defaultPrice').hide();
+             {% if product.description contains 'addon-only' %}
+              
+              {% else %}
+
+              $('.currentPrice').text($('.plusProductPrice').attr('data-price'))
+              {% endif %}
+         $('.checkboxes').each(function(){
+        if($(this).is(":checked")) {
+          
+          var pric       =  parseFloat($(this).attr('data-price'));  
+          var totalPrice =  parseFloat($('.currentPrice').text());
+          
+          var final_price = pric +  totalPrice;
+          
+          $('.currentPrice').text(final_price.toFixed(2))
+          
+          
+        }
+        
+      });
+      
+      });
+      
+      
+            $('#unselect_all_products').click(function(){
+               $('.stickHeader').show();   $('.stickHeader.defaultPrice').hide();
+         $('.checkboxes').each(function(){
+        if($(this).is(":checked")) {
+           
+                     var pric       =  parseFloat($(this).attr('data-price'));  
+          var totalPrice =  parseFloat($('.currentPrice').text());
+          
+          var final_price =   totalPrice - pric ;
+          
+          $('.currentPrice').text(0.00);
+          
+          
+        }
+           else
+           {
+
+           }
+        
+      });
+      
+      });
+      
+      $('#unselect_all_products').click(function(){
+      $(this).hide();
+ 	  $('#select_all_products').show();
+      $('#quick_cart').find('input').prop('checked',false);
+    
+  });
+      
+       });
+  </script>
+
+<style>
+  
+  {% if find == true %}
+  #select_all_products {
+  display:none;
+  }
+  {% else %}
+  
+  #unselect_all_products {
+  display:none;
+  }
+  {% endif %}
+  .show_popup {
+  position: relative;
+  top: 8px;
+  cursor:pointer;
+    width:100%;
+}
+  
+.fa.fa-file-image-o {
+  color: rgb(0, 69, 124);
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 5px;
+}
+  .fa.fa-external-link {
+  font-size: 16px;
+  margin-left: 5px;
+}
+  
+  .md-trigger {
+  cursor: pointer;
+}
+  /* Tooltip container */
+.cust_tooltip {
+  // border-bottom: 1px dotted black;
+  display: inline-block;
+  position: relative;
+}
+
+.cust_tooltip .cust_tooltiptext {
+  border: 4px solid transparent;
+  bottom: 110%;
+  color: #ffffff;
+  left: 50%;
+  margin-left: -123px;
+  max-width: 320px;
+  min-width: 250px;
+  opacity: 0;
+  position: absolute;
+  text-align: center;
+  transition: opacity 1s ease 0s;
+  visibility: hidden;
+  z-index: 1;
+}
+  .popup_dimension {
+  padding: 0 !important;
+  margin: auto !important;
+  max-width: 464px;
+  position: relative;
+}
+
+/* Tooltip arrow */
+.cust_tooltip .cust_tooltiptext::after {
+  border-color: rgb(125,125,125) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0);
+  border-style: solid;
+  border-width: 8px;
+  content: "";
+  left: 47%;
+  margin-left: -5px;
+  position: absolute;
+  top: 99.2%;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.cust_tooltip:hover .cust_tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+.cust_tooltiptext > img {
+ // border: 2px solid rgb(125,125,125);
+  margin: 2px;
+  text-align: center;
+}
+ 
+  .md-content {
+  text-align: center;
+  background-color: transparent !important;
+}
+.md-close {
+  background-color: #000000;
+  border-radius: 15px;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px 6px;
+  position: absolute;
+  right: -8px;
+  top: -7px;
+}
+.button.small.grey {
+  background-color: rgb(104, 177, 220);
+  border: 1px solid rgb(0, 0, 0);
+  border-radius: 5px;
+  color: rgb(255, 255, 255);
+  font-weight: 600;
+  padding: 7px 24px;
+  text-transform: uppercase;
+  font-size:16px;
+}
+  .button.small.grey:hover {
+    background-color:   rgb(53,138,187);
+  }
+  
+  .popup_dimension > img {
+  width: 100%;
+}
+ @media only screen and (max-width: 890px) {
+
+   .cust_tooltiptext {
+  display: none;
+}
+   
+ }
+  
+   @media only screen and (max-width: 420px) {
+  .popup_dimension {
+  margin: 10px !important;
+
+}
+     
+ }
+.notavailable {
+  text-decoration: line-through  red;
+}
+  
+</style>
+
+
+{% endif %}
+
+

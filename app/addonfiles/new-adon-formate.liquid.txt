@@ -1,0 +1,212 @@
+ 
+
+{% assign variants_check = false %}
+{% assign description = product.description %}
+{% assign split_info = description | split: "quick-add"  %}
+{% assign all_description =  description | split: "quick-add" | first | escape %}
+{% assign contain_collection =  description | split: "quick-add" | last | escape %}
+{% assign contain_collection_last =  contain_collection | split: "collection=" | last | escape %}
+{% assign contain_collection_first =  contain_collection | split: "collection=" | first | escape %}
+{% assign collection_name =  contain_collection_last | split: "=" | first | escape %}  <!-- get name of collection -->
+
+{% assign quick_view_section =  description | split: "quick-add" | last | escape %}  <!-- get content after quick view -->
+{% assign sections = quick_view_section | split:'|' %}   <!-- split section on base of pipe -->
+{% assign length = sections | size | minus:1%}    <!-- size minus 1  -->
+{% assign product_names = "" %}
+{% assign counter = 0 %}
+ 
+
+{% if   sections[0] contains 'selected'%}
+{% assign find = true %}
+{% else%}
+{% assign find = false %}
+{% endif %}
+
+
+{% for i in (0..length) %}    <!--loop for getting all sections -->
+ 
+{% if    sections[i] contains 'amp;' or  sections[i] contains '<p>'  %}
+{% if   sections[i] contains 'title' and  sections[i] contains 'amp;' %}
+{% else %}
+{% assign err = true %}
+{% endif %}
+{% endif %}
+{% endfor %}
+
+{% if err == true %}
+<div class="alert alert-danger">
+  <strong>Addons formatting error</strong> 
+</div>
+{% else %}
+{% for i in (0..length) %}    <!--loop for getting all sections -->
+ 
+{% if sections[i] contains 'collection' %}  <!-- when collection -->
+
+{% assign coll_sections = sections[i] | split:'collection=' %}  <!-- match with collection~ -->
+
+{% assign length = coll_sections | size | minus:1%}
+{% for j in (0..length) %}
+{% if sections[j] contains 'selected' %}  <!-- when collection -->
+
+{% else %}
+
+{% if coll_sections[j] contains '+' %}  <!-- if contains tags -->
+
+{% assign sections_tags_coll = coll_sections[j] | split:'+' %}  <!-- split the collection with tags -->
+ {% include 'show-collection' %}
+ 
+{% else %}  <!-- if not contains tags -->
+   
+{% assign sections_title = coll_sections[j] %}  <!-- split the coll tabs -->
+<!-- {% assign tabs_coll_sel = tabs_coll_sel | append: ',' | append: sections_title[1] %} -->
+{% assign title_counter = title_counter |plus:1 %}
+   {% include 'highlights-section' %}
+{% endif %}
+{% endif %}
+{% endfor %}
+
+{% elsif sections[i] contains 'title' and sections[i] contains '=' %}       <!-- when title -->
+{% assign sections_title = sections[i] | split:'title=' %}  <!-- split the product -->
+{% assign tabs_titl = tabs_titl | append: ',' | append: sections_title[1] %}
+{% assign tit_counter = tit_counter |plus:1 %}
+ 
+<h2>{{ sections_title[1] | replace: 'amp;', '' }}</h2>
+ 
+ 
+{% else  %}    <!-- when product -->
+
+<!--{ % assign sections_prodcut_handle = sections[i] | split:'~' %}  <!-- split the product -->
+
+{% assign product_names =  sections[i] %}
+{% assign prodctuct_counter = prodctuct_counter |plus:1 %}
+ 
+ 
+{% assign  productHandle = product_names | strip %}
+{% if   productHandle contains 'span'   %}
+
+{% else %}
+{% assign productSelected = false %}
+{% if  productHandle contains '*'  %}
+{% assign productSelected = true %}
+{% endif %}
+{% assign productHandle = productHandle | remove: '*'%}
+<!--  { % include 'show-product' %} -->
+
+<!-- to check product less then 900 -->
+{% if settings.theme_selector == 'One_Exam_Prep' %}
+{% assign product_count = settings.product_addons %}
+{% elsif settings.theme_selector == 'Export_Probilitysafetyacademy' %}
+{% assign product_count = settings.Probilitysafetyacademy_product_addons %}
+{% elsif settings.theme_selector == 'examprep_probilitymedia' %}
+{% assign product_count = settings.Probilitymedia_product_addons %}
+{% elsif settings.theme_selector == 'Export_Nascla_1examprep' %}
+{% assign product_count = settings.Nascla_product_addons %}
+{% elsif settings.theme_selector == 'Internationalcodes_Exported' %}
+{% assign product_count = settings.Internationalcodes_product_addons %}
+{% endif %}
+
+ 
+<!--  check if products less then false  -->
+{% if product_count == true %}
+ {% paginate collections['all'].products by 9000 %}
+
+{% for product in collections['all'].products %}
+ 
+ {% if product.handle == productHandle %}
+ 
+ {% include 'show-product' %}
+ 
+{% endif %}
+ 
+{% endfor %}
+
+
+
+{% include 'pagination' %} 	
+
+<!--Content End--> 
+  {% endpaginate %}
+
+{% else %}
+ 
+ 
+<!-- if more then  -->
+<!-- code for check also colection name first letter -->
+{% assign collName = productHandle | slice: 0 %}
+{% assign check = false %}
+ {% paginate collections[collName].products by 9000 %}
+{% for product in collections[collName].products %}
+{% assign first_title_char = product.title | slice: 0 %}
+{% if product.handle == productHandle %}
+ {% include 'show-product' %}
+{% assign check = true %}
+{% endif %}
+ 
+{% endfor %}
+
+{% if check == false %}
+<div class="alert alert-danger loop-{{forloop.index}}">
+  <strong>ERROR!</strong> product title doesnot match with product handle.
+</div>
+{% endif %}
+
+{% include 'pagination' %} 	
+
+<!--Content End--> 
+  {% endpaginate %}
+{% endif %}
+<!-- code for check also colection name first letter -->
+
+
+
+
+{% endif %}
+{% endif %}
+{% endfor %}  <!-- end here  -->
+
+
+{% endif %}
+
+{% assign coll_names_single = coll_names | split:',' %}  <!-- split the all collection -->
+{% assign product_names_single = product_names | split:' ' %}  <!-- split the all prodcuts -->
+{% assign tabs_titl = tabs_titl | remove_first: "," %}
+{% assign tabs_coll = tabs_titl | split:',' %}  <!-- split the atbs ttitl -->
+{% assign tabs_coll_sel = tabs_coll_sel | remove_first: "," %}
+{% assign tabs_coll_new = tabs_coll_sel | split:',' %}  <!-- split the atbs ttitl -->
+{% assign title_single = titleis | split:' ' %}  <!-- split the all title -->
+{% assign title_single_name = title_names | split:' ' %}  <!-- split the all prodcuts --> 
+{% assign coll_tags_strip = coll_tags | strip %}   <!--tagss -->
+{% assign coll_tags_single = coll_tags_strip | split:' ' %}  <!-- split the all collection -->
+
+
+
+
+
+
+
+  <!-- Remove Select All Buttons (Have multiple variants )-->
+<input id="select_all_products" class="button small grey" value="Select All" type="button"> 
+<input id="unselect_all_products" class="button small grey" value="Unselect All" type="button"> 
+<input id="add-to-cart" class="add_2_cart button small grey" value="Add to Cart" type="button"> 
+<div class="md-modal md-effect-1" id="modal-1">
+<div class="md-content">
+<div class="popup_dimension">
+<i class="fa fa-times md-close" aria-hidden="true"></i>
+<img src="">
+</div>
+</div>   
+</div>
+  
+<button class="md-trigger" data-modal="modal-1" style="display:none;">Fade in &amp; Scale</button>
+<div class="md-overlay"></div><!-- the overlay element --> 
+</div>
+<div class="msg_success" style="text-align:center"></div> 
+
+{{ 'classie.js' | asset_url | script_tag }}
+{{ 'modalEffects.js' | asset_url | script_tag }}
+
+<script>
+// this is important for IEs
+var polyfilter_scriptpath = '/js/';
+</script>
+ 

@@ -1,0 +1,140 @@
+{% assign coll_names_single = coll_names  split',' %}  !-- split the all collection --
+{% assign product_names_single = product_names  split' ' %}  !-- split the all prodcuts --
+{% assign tabs_titl = tabs_titl  remove_first , %}
+{% assign tabs_coll = tabs_titl  split',' %}  !-- split the atbs ttitl --
+{% assign tabs_coll_sel = tabs_coll_sel  remove_first , %}
+{% assign tabs_coll_new = tabs_coll_sel  split',' %}  !-- split the atbs ttitl --
+{% assign title_single = titleis  split' ' %}  !-- split the all title --
+{% assign title_single_name = title_names  split' ' %}  !-- split the all prodcuts -- 
+{% assign coll_tags_strip = coll_tags  strip %}   !--tagss --
+{% assign coll_tags_single = coll_tags_strip  split' ' %}  !-- split the all collection --
+!-- If data-type is other than collection (product) --
+
+{% if true  %}
+
+ ul
+{% assign  prodctuct_counter =  prodctuct_counter  minus1 %} 
+   
+   
+ 
+    
+   
+{% if product.variants.size  1 %} !-- To check Added Products have variants --
+  
+{% assign variants_check = true %}
+   
+   {% assign variant = product.variants.first %}
+   {% if variant.inventory_quantity = 0  and variant.inventory_management   %}
+  li class=with-variant 
+   label
+   {{ product.title }}, +{{ product.price  money }} 
+     
+    label
+    span
+    div class=cust_tooltipi class=fa fa-file-image-o data-img={{ product.featured_image  img_url 'grande' }} aria-hidden=truei
+     span class=cust_tooltiptextimg class=show_popup src= span
+	 div
+     a class=add-more-products href={{product.url }} target=_blanki class=fa fa-external-link aria-hidden=trueia 
+     
+    span
+  li
+  ul class=nested-ul
+{% for variant in product.variants %}  !-- Loop to get variant of each product --
+    {% if variant.inventory_quantity = 0  and variant.inventory_management   %}
+   li class=notavailable
+     label
+      input  data-price = {{ variant.price  money_without_currency }} {% if find == true %} {% if forloop.first == true %}checked=checked {% endif %}{% endif %} class=checkboxes  nested_variant_one type=checkbox value={{variant.id}} disabled
+       {{ variant.title }}, +{{ variant.price  money }}
+      label
+   li
+    {% else %}
+       li class= 
+     label
+      input  data-price = {{ variant.price  money_without_currency }} {% if find == true %} {% if forloop.first == true %}checked=checked {% endif %}{% endif %} class=checkboxes  nested_variant_one type=checkbox value={{variant.id}}
+       {{ variant.title }}, +{{ variant.price  money }}
+      label
+   li
+    {% endif %}
+{% endfor %}
+  ul
+       
+!--    if available then  --
+   
+   {% else %}
+     li class=with-variant
+   label
+   {{ product.title }}, +{{ product.price  money }} 
+     
+    label
+    span
+    div class=cust_tooltipi class=fa fa-file-image-o data-img={{ product.featured_image  img_url 'grande' }} aria-hidden=truei
+     span class=cust_tooltiptextimg class=show_popup src= span
+	 div
+     a class=add-more-products href={{product.url }} target=_blanki class=fa fa-external-link aria-hidden=trueia 
+     
+    span
+  li
+ ul class=nested-ul
+{% for variant in product.variants %}  !-- Loop to get variant of each product --
+    {% if variant.inventory_quantity = 0  and variant.inventory_management   %}
+   li class=notavailable
+     label
+      input  data-price = {{ variant.price  money_without_currency }} {% if find == true %} {% if forloop.first == true %}checked=checked {% endif %}{% endif %} class=checkboxes  nested_variant_one type=checkbox value={{variant.id}} disabled
+       {{ variant.title }}, +{{ variant.price  money }}
+      label
+   li
+    {% else %}
+       li class= 
+     label
+      input  data-price = {{ variant.price  money_without_currency }} {% if find == true %} {% if forloop.first == true %}checked=checked {% endif %}{% endif %} class=checkboxes  nested_variant_one type=checkbox value={{variant.id}}
+       {{ variant.title }}, +{{ variant.price  money }}
+      label
+   li
+    {% endif %}
+{% endfor %}
+  ul
+   
+   {% endif %}
+    
+{% else %} !-- For those products have no variants--
+   {% assign prc =  product.price   divided_by100 %}
+   {% if prc  0 %}
+   {% assign variant = product.variants.first %}
+   {% if variant.inventory_quantity = 0 and  variant.inventory_management   %}
+    li class=without-variant notavailable
+   label
+       input class=checkboxes  data-price = {{ product.price   divided_by100}} type=checkbox {% if find == true %}checked{%endif%} value={% for variant in product.variants %}{{variant.id}}{% endfor %} disabled
+       {{ product.title }}, +{{ product.price  money }} 
+      
+   
+   label
+   span
+    div class=cust_tooltipi class=fa fa-file-image-o data-img={{ product.featured_image  img_url 'grande' }} aria-hidden=truei
+  	    span class=cust_tooltiptextimg class=show_popup src=span
+	    div
+        a class=add-more-products href={{product.url }} target=_blanki class=fa fa-external-link aria-hidden=trueia
+ 
+   span
+li 
+   {% else %}
+ li class=without-variant
+   label
+       input class=checkboxes  data-price = {{ product.price   divided_by100}} type=checkbox {% if find == true %}checked{%endif%} value={% for variant in product.variants %}{{variant.id}}{% endfor %}
+       {{ product.title }}, +{{ product.price  money }} 
+      
+   
+   label
+   span
+    div class=cust_tooltipi class=fa fa-file-image-o data-img={{ product.featured_image  img_url 'grande' }} aria-hidden=truei
+  	    span class=cust_tooltiptextimg class=show_popup src=span
+	    div
+        a class=add-more-products href={{product.url }} target=_blanki class=fa fa-external-link aria-hidden=trueia
+ 
+   span
+li 
+   {% endif %}
+{% endif%}
+ {% endif%} 
+ul
+  
+{% endif %}

@@ -1,0 +1,48 @@
+{% assign coll_names_single = coll_names | split:',' %}  <!-- split the all collection -->
+{% assign product_names_single = product_names | split:' ' %}  <!-- split the all prodcuts -->
+{% assign tabs_titl = tabs_titl | remove_first: "," %}
+{% assign tabs_coll = tabs_titl | split:',' %}  <!-- split the atbs ttitl -->
+{% assign tabs_coll_sel = tabs_coll_sel | remove_first: "," %}
+{% assign tabs_coll_new = tabs_coll_sel | split:',' %}  <!-- split the atbs ttitl -->
+{% assign title_single = titleis | split:' ' %}  <!-- split the all title -->
+{% assign title_single_name = title_names | split:' ' %}  <!-- split the all prodcuts --> 
+{% assign coll_tags_strip = coll_tags | strip %}   <!--tagss -->
+{% assign coll_tags_single = coll_tags_strip | split:' ' %}  <!-- split the all collection -->
+
+{% assign tit_counter = tit_counter| minus:1 %}
+
+ 
+ 
+<h2>{{tabs_coll[i]}}</h2>
+ <ul class="tabsSection"> 
+{% assign coll_handle =  sections_title | strip %}
+{% for product in collections[coll_handle].products %} 
+   
+   
+    {% if variant.inventory_quantity <= 0 %}
+   <li class="without-variant not-available"><label>{{product.title}}, +${{product.price | divided_by:100}} 
+<input class="checkboxes" data-price = "{{ product.price |  money_without_currency}}"  type="checkbox" {% if find == true %}checked="checked" {% endif %} value="{{ product.variants.first.id }}" disabled>{{product.title}}, +${{product.price | divided_by:100}} 
+  </label>
+  <span>
+  <div class="cust_tooltip"><i class="fa fa-file-image-o" data-img="{{ product.featured_image | img_url: 'grande' }}" aria-hidden="true"></i>
+<span class="cust_tooltiptext"><img class="show_popup" src=""></span>
+</div>
+<a class="add-more-products" href="{{product.url }}" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i></a>
+  
+  </span>
+   </li> 
+   {% else %}
+<li class="without-variant"><label><input class="checkboxes" data-price = "{{ product.price |  money_without_currency}}"  type="checkbox" {% if find == true %}checked="checked" {% endif %} value="{{ product.variants.first.id }}">{{product.title}}, +${{product.price | divided_by:100}} 
+
+  </label>
+  <span>
+  <div class="cust_tooltip"><i class="fa fa-file-image-o" data-img="{{ product.featured_image | img_url: 'grande' }}" aria-hidden="true"></i>
+<span class="cust_tooltiptext"><img class="show_popup" src=""></span>
+</div>
+<a class="add-more-products" href="{{product.url }}" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i></a>
+  
+  </span>
+   </li> 
+   {% endif %}
+{% endfor %}
+</ul>

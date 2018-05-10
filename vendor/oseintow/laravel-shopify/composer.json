@@ -1,0 +1,24 @@
+{
+    "name": "oseintow/laravel-shopify",
+    "description": "Laravel shopify package",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "michael osei ntow",
+            "email": "oseintow@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0",
+        "guzzlehttp/guzzle": "^6.2",
+        "illuminate/support": "^5.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Oseintow\\": "src/"
+        }
+    },
+    "config": {
+        "preferred-install": "dist"
+    }
+}

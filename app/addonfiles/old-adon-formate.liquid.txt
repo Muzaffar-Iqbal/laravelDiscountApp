@@ -1,0 +1,300 @@
+
+{% assign variants_check = false %}
+     {% assign description = product.description %}
+     {% assign split_info = description | split: "quick-add"  %}
+
+	 {% assign all_description =  description | split: "quick-add" | first | escape %} 
+  <!-- To check data-select="true" or data-select="false" -->
+  	 {% if all_description contains 'true'%}
+	 {% assign find = true %}
+  	 {% else%}
+ 	{% assign find = false %}
+  	 {% endif %}
+  
+    <!-- To check data-type="collection" -->
+  
+    	 {% if all_description contains 'collection'%}
+	 {% assign collection = true %}
+  	 {% else%}
+ 	{% assign collection = false %}
+  	 {% endif %}
+
+     {% assign split_des = split_info[1] | split: "/"  %}
+     <span class="cart_hide" style="display:none;">{{split_des[2]}}</span>
+    
+  	{% for item in split_des %}
+  	{% if forloop.first %}
+	{% capture item_length %}{{ forloop.length }}{% endcapture %}
+    {% endif %}
+	{% endfor %}
+  	{% assign length = item_length | minus: 3 %}
+  
+{% if collection %}
+  <!-- If data-type="collection"  -->
+  	<ul>
+   	{% for i in (2..length) %}
+        {% for all_products in collections[split_des[i]].products %}
+  			
+      
+   	{% if all_products.variants.size > 1 %} <!-- To check Added Products have variants -->
+     {% assign variants_check = true %}
+      {% assign variant = all_products.variants.first %}
+      {% if variant.inventory_quantity <= 0  and variant.inventory_management  %} 
+       <li class="with-variant notavailable">
+    	<label>
+        {{ all_products.title }}, +{{ all_products.price | money }} 
+        
+        </label>
+         <div class="cust_tooltip"><i class="fa fa-file-image-o" data-img="{{ all_products.featured_image | img_url: 'grande' }}" aria-hidden="true"></i>
+  		<span class="cust_tooltiptext"><img class="show_popup" src="" ></span>
+		</div>
+          <a class="add-more-products" href="{{all_products.url }}" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i></a> 
+        
+    </li>
+    <ul class="nested-ul">
+            
+     
+    {% for variant in all_products.variants %}  <!-- Loop to get variant of each product -->
+       {% if variant.inventory_quantity <= 0  and variant.inventory_management  %} 
+    	<li>
+        	<label class="notavailable">
+        	<input  {% if forloop.index == 1%}{% if find == true %}checked{%endif%}{% endif %} class="checkboxes {% if forloop.index == 1%}nested_variant_one{% endif %}" type="checkbox" value="{{variant.id}}" disabled>
+        	{{ variant.title }}, +{{ variant.price | money }}
+        	</label>
+         </li>
+      {% else %}
+          	<li>
+        	<label class="">
+        	<input  {% if forloop.index == 1%}{% if find == true %}checked{%endif%}{% endif %} class="checkboxes {% if forloop.index == 1%}nested_variant_one{% endif %}" type="checkbox" value="{{variant.id}}">
+        	{{ variant.title }}, +{{ variant.price | money }}
+        	</label>
+         </li>
+      {% endif %}
+     {% endfor %}
+     </ul>
+      {% else %}
+      <li class="with-variant">
+    	<label>
+        {{ all_products.title }}, +{{ all_products.price | money }} 
+        
+        </label>
+         <div class="cust_tooltip"><i class="fa fa-file-image-o" data-img="{{ all_products.featured_image | img_url: 'grande' }}" aria-hidden="true"></i>
+  		<span class="cust_tooltiptext"><img class="show_popup" src="" ></span>
+		</div>
+          <a class="add-more-products" href="{{all_products.url }}" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i></a> 
+        
+    </li>
+    <ul class="nested-ul">
+            
+     
+    {% for variant in all_products.variants %}  <!-- Loop to get variant of each product -->
+       {% if variant.inventory_quantity <= 0  and variant.inventory_management  %} 
+    	<li>
+        	<label class="notavailable">
+        	<input   {% if forloop.index == 1%}{% if find == true %}checked{%endif%}{% endif %} class="checkboxes {% if forloop.index == 1%}nested_variant_one{% endif %}" type="checkbox" value="{{variant.id}}" disabled>
+        	{{ variant.title }}, +{{ variant.price | money }}
+        	</label>
+         </li>
+      {% else %}
+          	<li>
+        	<label class="">
+        	<input disabled {% if forloop.index == 1%}{% if find == true %}checked{%endif%}{% endif %} class="checkboxes {% if forloop.index == 1%}nested_variant_one{% endif %}" type="checkbox" value="{{variant.id}}">
+        	{{ variant.title }}, +{{ variant.price | money }}
+        	</label>
+         </li>
+      {% endif %}
+     {% endfor %}
+     </ul>
+        {% endif %}  
+    
+    {% else %} <!-- For those products have no variants-->
+       {% assign variant = all_products.variants.first %}
+      {% if variant.inventory_quantity <= 0  and variant.inventory_management  %} 
+          <li class="without-variant notavailable">
+    	<label>
+        	<input class="checkboxes"   type="checkbox" {% if find == true %}checked{%endif%} value="{% for variant in all_products.variants %}{{variant.id}}{% endfor %}" disabled >
+        	{{ all_products.title }}, +{{ all_products.price | money }} 
+             		
+      
+      </label>
+      <div class="cust_tooltip"><i class="fa fa-file-image-o" data-img="{{ all_products.featured_image | img_url: 'grande' }}" aria-hidden="true"></i>
+  		<span class="cust_tooltiptext"><img class="show_popup" src=""></span>
+		</div>
+            <a class="add-more-products" href="{{all_products.url }}" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i></a>
+        
+    </li> 
+      {% else %}
+    <li class="without-variant">
+    	<label>
+        	<input class="checkboxes" type="checkbox" {% if find == true %}checked{%endif%} value="{% for variant in all_products.variants %}{{variant.id}}{% endfor %}">
+        	{{ all_products.title }}, +{{ all_products.price | money }} 
+             		
+      
+      </label>
+      <div class="cust_tooltip"><i class="fa fa-file-image-o" data-img="{{ all_products.featured_image | img_url: 'grande' }}" aria-hidden="true"></i>
+  		<span class="cust_tooltiptext"><img class="show_popup" src=""></span>
+		</div>
+            <a class="add-more-products" href="{{all_products.url }}" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i></a>
+        
+    </li> 
+      {% endif %}
+    {% endif%}
+      {% endfor %}
+    {% endfor %}
+   </ul>
+  
+  <!-- End Collection Type --> 
+    {% else %}
+<!-- If data-type is other than collection (product) -->
+  <ul>
+   	{% for i in (2..length) %}
+ {% if  all_products[split_des[i]].title  == '' %}
+   <div class="alert alert-danger ">
+  <strong>ERROR!</strong> product title doesnot match with product handle.
+</div>
+    {% else %}
+    
+	{% if all_products[split_des[i]].variants.size > 1 %} <!-- To check Added Products have variants -->
+     {% assign variants_check = true %}
+    
+    
+       {% assign variant = all_products[split_des[i]].variants.first %}
+		{% if variant.inventory_quantity <= 0  and variant.inventory_management  %} 
+          <li class="with-variant notavailable">
+    	<label>
+        {{ all_products[split_des[i]].title }}, +{{ all_products[split_des[i]].price | money }} 
+         
+        
+        </label>
+        <div class="cust_tooltip"><i class="fa fa-file-image-o" data-img="{{ all_products[split_des[i]].featured_image | img_url: 'grande' }}" aria-hidden="true"></i>
+  		<span class="cust_tooltiptext"><img class="show_popup" src="" ></span>
+		</div>
+          <a class="add-more-products" href="{{all_products[split_des[i]].url }}" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i></a> 
+       
+    </li>
+    <ul class="nested-ul">
+    {% for variant in all_products[split_des[i]].variants %}  <!-- Loop to get variant of each product -->
+       {% if variant.inventory_quantity <= 0  and variant.inventory_management   %} 
+          	<li class="notavailable">
+        	<label>
+        	<input {% if forloop.index == 1%}{% if find == true %}checked{%endif%}{% endif %} class="checkboxes {% if forloop.index == 1%}nested_variant_one{% endif %}" type="checkbox" value="{{variant.id}}" disabled>
+        	{{ variant.title }}, +{{ variant.price | money }}
+        	</label>
+         </li>
+      {% else %}
+    	<li>
+        	<label>
+        	<input {% if forloop.index == 1%}{% if find == true %}checked{%endif%}{% endif %} class="checkboxes {% if forloop.index == 1%}nested_variant_one{% endif %}" type="checkbox" value="{{variant.id}}">
+        	{{ variant.title }}, +{{ variant.price | money }}
+        	</label>
+         </li>
+      {% endif %}
+     {% endfor %}
+     </ul>
+    {% else %}
+      <li class="with-variant ">
+    	<label>
+        {{ all_products[split_des[i]].title }}, +{{ all_products[split_des[i]].price | money }} 
+         
+        
+        </label>
+        <div class="cust_tooltip"><i class="fa fa-file-image-o" data-img="{{ all_products[split_des[i]].featured_image | img_url: 'grande' }}" aria-hidden="true"></i>
+  		<span class="cust_tooltiptext"><img class="show_popup" src="" ></span>
+		</div>
+          <a class="add-more-products" href="{{all_products[split_des[i]].url }}" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i></a> 
+       
+    </li>
+    <ul class="nested-ul">
+    {% for variant in all_products[split_des[i]].variants %}  <!-- Loop to get variant of each product -->
+       {% if variant.inventory_quantity <= 0  and variant.inventory_management   %} 
+          	<li class="notavailable">
+        	<label>
+        	<input disabled {% if forloop.index == 1%}{% if find == true %}checked{%endif%}{% endif %} class="checkboxes {% if forloop.index == 1%}nested_variant_one{% endif %}" type="checkbox" value="{{variant.id}}">
+        	{{ variant.title }}, +{{ variant.price | money }}
+        	</label>
+         </li>
+      {% else %}
+    	<li>
+        	<label>
+        	<input {% if forloop.index == 1%}{% if find == true %}checked{%endif%}{% endif %} class="checkboxes {% if forloop.index == 1%}nested_variant_one{% endif %}" type="checkbox" value="{{variant.id}}">
+        	{{ variant.title }}, +{{ variant.price | money }}
+        	</label>
+         </li>
+      {% endif %}
+     {% endfor %}
+     </ul>
+        {% endif %}  
+    
+    {% else %} <!-- For those products have no variants-->
+           {% assign variant = all_products[split_des[i]].variants.first %}
+		{% if variant.inventory_quantity <= 0  and variant.inventory_management  %} 
+        <li class="without-variant notavailable">
+    	<label>
+        	<input disabled class="checkboxes" type="checkbox" {% if find == true %}checked{%endif%} value="{% for variant in all_products[split_des[i]].variants %}{{variant.id}}{% endfor %}">
+        	{{ all_products[split_des[i]].title }}, +{{ all_products[split_des[i]].price | money }} 
+             		
+      
+      
+      </label>
+      <div class="cust_tooltip"><i class="fa fa-file-image-o" data-img="{{ all_products[split_des[i]].featured_image | img_url: 'grande' }}" aria-hidden="true"></i>
+  		<span class="cust_tooltiptext"><img class="show_popup" src=""></span>
+		</div>
+            <a class="add-more-products" href="{{all_products[split_des[i]].url }}" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i></a>
+       
+    </li>
+    {% else %}
+    <li class="without-variant">
+    	<label>
+        	<input class="checkboxes" type="checkbox" {% if find == true %}checked{%endif%} value="{% for variant in all_products[split_des[i]].variants %}{{variant.id}}{% endfor %}">
+        	{{ all_products[split_des[i]].title }}, +{{ all_products[split_des[i]].price | money }} 
+             		
+      
+      
+      </label>
+      <div class="cust_tooltip"><i class="fa fa-file-image-o" data-img="{{ all_products[split_des[i]].featured_image | img_url: 'grande' }}" aria-hidden="true"></i>
+  		<span class="cust_tooltiptext"><img class="show_popup" src=""></span>
+		</div>
+            <a class="add-more-products" href="{{all_products[split_des[i]].url }}" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i></a>
+       
+    </li> 
+    {% endif %}
+    {% endif%}
+    {% endif%}
+      {% endfor %}
+   </ul>
+  <!-- End Product Type -->
+  
+    {% endif %}
+     
+<!--<h2>Highlights and Tabs</h2>
+    
+      <ul>
+{ % for product in collections['highlights-and-tabs'].products %}   
+        <li class="without-variant"><label><input class="checkboxes" type="checkbox" value="{ { product.variants.first.id }}">{ {product.title}}, +${ {product.price | divided_by:100}} 
+         <div class="cust_tooltip"><i class="fa fa-file-image-o" data-img="{ { product.featured_image | img_url: 'grande' }}" aria-hidden="true"></i>
+  		<span class="cust_tooltiptext"><img class="show_popup" src=""></span>
+		</div>
+          <a class="add-more-products" href="{ {product.url }}" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i></a></label></li> 
+{ % endfor %}
+   </ul> -->
+  <!-- Remove Select All Buttons (Have multiple variants )-->
+  	<input id="select_all_products" class="button small grey" value="Select All" type="button"> 
+  	<input id="unselect_all_products" class="button small grey" value="Unselect All" type="button"> 
+  <input id="add-to-cart" class="add_2_cart button small grey" value="Add to Cart" type="button"> 
+ 
+    <div class="md-modal md-effect-1" id="modal-1">
+			<div class="md-content">
+              <div class="popup_dimension">
+              <i class="fa fa-times md-close" aria-hidden="true"></i>
+			<img src="">
+              </div>
+			</div>
+   
+		</div>
+  
+ <button class="md-trigger" data-modal="modal-1" style="display:none;">Fade in &amp; Scale</button>
+ <div class="md-overlay"></div><!-- the overlay element -->
+  
+</div>
+   <div class="msg_success" style="text-align:center"></div> 
+
