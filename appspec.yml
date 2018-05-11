@@ -1,18 +1,13 @@
 version: 0.0
-os: ubuntu
+os: linux
 files:
   - source: /
-    destination: /var/www/html/blog
-permissions:
-   - object: /var/www/html/blog
-     pattern: "**"
-     owner: apache
-     group: apache
-     mode: 755
-     type:
-       - file
+    destination: /var/www/html/laravel
 hooks:
   AfterInstall:
+    - location: scripts/install_dependencies
+      timeout: 900
+      runas: root
     - location: scripts/start_server
       timeout: 300
       runas: root
